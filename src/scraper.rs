@@ -6,6 +6,7 @@ use ntfy::{dispatcher, Error, Payload, Priority, Url};
 use thirtyfour::error::WebDriverResult;
 use thirtyfour::{By, WebDriver};
 use serde::{Deserialize, Serialize};
+use crate::driver::*;
 
 #[derive(Clone)]
 pub(crate) struct Scraper {
@@ -120,4 +121,15 @@ impl Scraper {
             tokio::time::sleep(tokio::time::Duration::from_secs(120)).await;
         } 
     }
+}
+
+pub(crate) async fn from_config(scraper_structs: &mut Vec<Scraper>, config: ScraperConfig) {
+    scraper_structs.push(Scraper {
+        name: config.name,
+        url: config.url,
+        base_url_to_prepend: config.base_url_to_prepend,
+        driver: create_driver().await.unwrap(),
+        listing: vec![],
+        house_link_css: config.house_link_css,
+    })
 }
