@@ -1,11 +1,15 @@
+chromedriver_path = "/home//path/to/chromedriver"
+
 [[scraper]]
 name = "Pararius"
 url = "https://www.pararius.nl/huurwoningen/utrecht/"
 base_url_to_prepend = "https://www.pararius.nl"
 house_link_css = "a.listing-search-item__link--depiction"
+ntfy_topic = "pararius-ntfy-topic"
 
 [[scraper]]
 name = "123Wonen"
 url = "https://www.123wonen.nl/huurwoningen/in/utrecht/sort/newest"
 base_url_to_prepend = ""
 house_link_css = "a.textlink-design.orange"
+ntfy_topic = "123Wonen-ntfy-topic"

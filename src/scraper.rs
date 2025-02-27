@@ -1,11 +1,13 @@
-use std::collections::HashSet;
-use std::fmt;
-use std::fs::{read_to_string, File};
-use std::io::Write;
+use crate::driver::*;
 use ntfy::{dispatcher, Error, Payload, Priority, Url};
+use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
+use std::fs::{read_to_string, File};
+use std::io::{ErrorKind, Write};
+use std::path::Path;
+use std::{env, fmt, fs};
 use thirtyfour::error::WebDriverResult;
 use thirtyfour::{By, WebDriver};
-use serde::{Deserialize, Serialize};
 
 #[derive(Clone)]
 pub(crate) struct Scraper {
@@ -15,6 +17,7 @@ pub(crate) struct Scraper {
     pub(crate) driver: WebDriver,
     pub(crate) listing: Vec<String>,
     pub(crate) house_link_css: String,
+    pub(crate) ntfy_topic: String,
 }
 #[derive(Deserialize)]
 pub(crate) struct ScraperConfigVec {
@@ -26,10 +29,15 @@ pub(crate) struct ScraperConfig {
     pub(crate) url: String,
     pub(crate) base_url_to_prepend: String,
     pub(crate) house_link_css: String,
+    pub(crate) ntfy_topic: String,
 }
 impl fmt::Display for ScraperConfig {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "({}, {}, {}, {})", self.name, self.url, self.base_url_to_prepend, self.house_link_css)
+        write!(
+            f,
+            "({}, {}, {}, {})",
+            self.name, self.url, self.base_url_to_prepend, self.house_link_css
+        )
     }
 }
 impl Scraper {
@@ -54,12 +62,10 @@ impl Scraper {
             .filter(|item| !item_set.contains(item))
             .collect();
 
-        if difference.is_empty() {
-            println!("No new items to be scraped");
-        } else {
+        if !difference.is_empty() {
             for item in difference {
                 self.listing.push(item.to_string());
-                self.notify(item).await;
+                // self.notify(item).await;
             }
             let file_path =
                 "./prev_session/".to_owned() + str::replace(&self.url, "/", "_").as_str() + ".txt";
@@ -74,7 +80,7 @@ impl Scraper {
     async fn notify(&self, new_url: String) -> Result<(), Error> {
         let dispatcher = dispatcher::builder("https://ntfy.sh").build_async()?; // Build dispatcher
 
-        let payload = Payload::new("rust-scraper-test")
+        let payload = Payload::new(&self.ntfy_topic)
             .message("Get a house!")
             .title("Nieuwe aanbod")
             .tags([&self.name])
@@ -90,8 +96,18 @@ impl Scraper {
 
     fn load_previous_session_file(&mut self) -> std::io::Result<()> {
         &self.listing.clear();
-        let file_path =
-            "./prev_session/".to_owned() + str::replace(&self.url, "/", "_").as_str() + ".txt";
+
+        let mut prev_session_path =
+            Path::new(env::current_dir()?.as_path()).join("./prev_session/");
+        match fs::create_dir_all(&prev_session_path) {
+            Ok(_) => {}
+            Err(e) => match e.kind() {
+                _ => println!("{:?}", e),
+            },
+        };
+        let prev_session_path = prev_session_path.to_str().unwrap();
+        let file_name = str::replace(&self.url, "/", "_") + ".txt";
+        let file_path = format!("{prev_session_path}{file_name}");
 
         match read_to_string(file_path.to_string()) {
             Ok(contents) => {
@@ -103,7 +119,6 @@ impl Scraper {
                 std::io::ErrorKind::NotFound => {
                     File::create(file_path.to_string())?;
                 }
-                std::io::ErrorKind::PermissionDenied => {}
                 _ => println!("{:?}", e),
             },
         }
@@ -118,6 +133,18 @@ impl Scraper {
             let scraped_results = self.scrape().await.expect("TODO: panic message");
             self.detect(scraped_results).await;
             tokio::time::sleep(tokio::time::Duration::from_secs(120)).await;
-        } 
+        }
     }
+}
+
+pub(crate) async fn from_config(scraper_structs: &mut Vec<Scraper>, config: ScraperConfig) {
+    scraper_structs.push(Scraper {
+        name: config.name,
+        url: config.url,
+        base_url_to_prepend: config.base_url_to_prepend,
+        driver: create_driver().await.unwrap(),
+        listing: vec![],
+        house_link_css: config.house_link_css,
+        ntfy_topic: config.ntfy_topic,
+    })
 }
