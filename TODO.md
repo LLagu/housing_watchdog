@@ -8,18 +8,21 @@ View the raw content of this file to understand the format.
 - [ ] Stress test
 - [ ] Add relevant comments
 - [ ] Add enum to cover for different find_all(By::)
-- [ ] Save and load previous ui session values
-
-### In Progress
+- [ ] Save and load previous UI session values
 - [ ] Code clean up and refactoring
   - [ ] Names
   - [ ] Modules
-- [ ] Add GUI or terminal control (config filepath + ntfy topic)
+  
+### In Progress
+
+- [ ] Add GUI or terminal control (config filepath + <s>ntfy topic</s>)
   - [ ] Move `App` definition and impl to separate module
-  - [ ] Add ntfy topic field to configuration
   - [ ] Rework UI colors and names
   - [ ] Make sparkline span its block width
   - [ ] Move ratatui logic in another module
+  - [ ] Move logo to another module
+- [ ] Prevent logic stdout to print in the UI
+- [ ] Add css exclusion parameter to config
 
 ### Done ✓
 
@@ -36,3 +39,4 @@ View the raw content of this file to understand the format.
   - [X] Define basic structure
   - [X] Parametrize main logic function to accept the config path
   - [X] Link buttons to main logic
+- [X] Add ntfy topic field to configuration and remove its UI element

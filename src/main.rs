@@ -43,14 +43,12 @@ async fn watchdog_logic(config_path: &str) {
 }
 
 enum InputMode {
-    NtfyTopic,
     FilePathInput,
     RunButton,
     StopButton,
 }
 
 struct App {
-    ntfy_topic_input: Input,
     file_path_input: Input,
     input_mode: InputMode,
     output: String,
@@ -75,9 +73,8 @@ impl App {
         }
 
         App {
-            ntfy_topic_input: Input::default(),
             file_path_input: Input::default(),
-            input_mode: InputMode::NtfyTopic,
+            input_mode: InputMode::FilePathInput,
             output: String::new(),
             show_output: false,
             loading: false,
@@ -88,17 +85,6 @@ impl App {
         }
     }
 
-    // fn run_watchdogs(&mut self) {
-    //     watchdog_logic(self.file_path_input.value());
-    //     self.output = format!(
-    //         "Text: {}\nFile path: {}",
-    //         self.ntfy_topic_input.value(),
-    //         self.file_path_input.value()
-    //     );
-    //     self.show_output = true;
-    //     self.loading = true;
-    //     self.loading_start_time = Some(Instant::now());
-    // }
     fn run_watchdogs(&mut self) {
         // Create a channel for cancellation
         let (cancel_tx, cancel_rx) = oneshot::channel();
@@ -129,18 +115,14 @@ impl App {
         });
 
         self.output = format!(
-            "Text: {}\nFile path: {}",
-            self.ntfy_topic_input.value(),
+            "File path: {}",
             self.file_path_input.value()
         );
         self.show_output = true;
         self.loading = true;
         self.loading_start_time = Some(Instant::now());
     }
-    // fn stop_watchdogs(&mut self) {
-    //     self.loading = false;
-    //     self.loading_start_time = None;
-    // }
+
     fn stop_watchdogs(&mut self) {
         // Send cancellation signal if we have a sender
         if let Some(cancel_tx) = self.cancel_sender.take() {
@@ -152,10 +134,9 @@ impl App {
     }
     fn next_input(&mut self) {
         self.input_mode = match self.input_mode {
-            InputMode::NtfyTopic => InputMode::FilePathInput,
             InputMode::FilePathInput => InputMode::RunButton,
             InputMode::RunButton => InputMode::StopButton,
-            InputMode::StopButton => InputMode::NtfyTopic,
+            InputMode::StopButton => InputMode::FilePathInput,
         };
     }
 
@@ -204,7 +185,6 @@ async fn main() {
                 .constraints(
                     [
                         Constraint::Length(8), // ASCII logo - increased height
-                        Constraint::Length(3), // Text input
                         Constraint::Length(3), // File path input
                         Constraint::Length(3), // Buttons
                         Constraint::Length(6), // Sparkline - increased height
@@ -221,15 +201,15 @@ async fn main() {
             f.render_widget(logo_widget, chunks[0]);
 
             // Ntfy topic input
-            let ntfy_topic_input_style = match app.input_mode {
-                InputMode::NtfyTopic => Style::default().fg(Color::Yellow),
-                _ => Style::default(),
-            };
-
-            let text_input = Paragraph::new(app.ntfy_topic_input.value())
-                .style(ntfy_topic_input_style)
-                .block(Block::default().borders(Borders::ALL).title(" NTFY Topic "));
-            f.render_widget(text_input, chunks[1]);
+            // let ntfy_topic_input_style = match app.input_mode {
+            //     InputMode::NtfyTopic => Style::default().fg(Color::Yellow),
+            //     _ => Style::default(),
+            // };
+            //
+            // let text_input = Paragraph::new(app.ntfy_topic_input.value())
+            //     .style(ntfy_topic_input_style)
+            //     .block(Block::default().borders(Borders::ALL).title(" NTFY Topic "));
+            // f.render_widget(text_input, chunks[1]);
 
             // File path input
             let file_path_style = match app.input_mode {
@@ -240,13 +220,13 @@ async fn main() {
             let file_path_input = Paragraph::new(app.file_path_input.value())
                 .style(file_path_style)
                 .block(Block::default().borders(Borders::ALL).title(" config.toml file path "));
-            f.render_widget(file_path_input, chunks[2]);
+            f.render_widget(file_path_input, chunks[1]);
 
             // Create horizontal layout for buttons
             let button_chunks = Layout::default()
                 .direction(Direction::Horizontal)
                 .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
-                .split(chunks[3]);
+                .split(chunks[2]);
 
             // Submit button
             let submit_style = match app.input_mode {
@@ -294,13 +274,13 @@ async fn main() {
                 } else {
                     Color::Gray
                 }));
-            f.render_widget(sparkline, chunks[4]);
+            f.render_widget(sparkline, chunks[3]);
 
             // Output
             if app.show_output {
                 let output = Paragraph::new(app.output.clone())
                     .block(Block::default().borders(Borders::ALL).title("Result"));
-                f.render_widget(output, chunks[5]);
+                f.render_widget(output, chunks[4]);
             }
         }).unwrap();
 
@@ -320,9 +300,6 @@ async fn main() {
                         _ => {}
                     },
                     _ => match app.input_mode {
-                        InputMode::NtfyTopic => {
-                            app.ntfy_topic_input.handle_event(&Event::Key(key));
-                        }
                         InputMode::FilePathInput => {
                             app.file_path_input.handle_event(&Event::Key(key));
                         }

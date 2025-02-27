@@ -16,6 +16,7 @@ pub(crate) struct Scraper {
     pub(crate) driver: WebDriver,
     pub(crate) listing: Vec<String>,
     pub(crate) house_link_css: String,
+    pub(crate) ntfy_topic: String,
 }
 #[derive(Deserialize)]
 pub(crate) struct ScraperConfigVec {
@@ -27,6 +28,7 @@ pub(crate) struct ScraperConfig {
     pub(crate) url: String,
     pub(crate) base_url_to_prepend: String,
     pub(crate) house_link_css: String,
+    pub(crate) ntfy_topic: String,
 }
 impl fmt::Display for ScraperConfig {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -75,7 +77,7 @@ impl Scraper {
     async fn notify(&self, new_url: String) -> Result<(), Error> {
         let dispatcher = dispatcher::builder("https://ntfy.sh").build_async()?; // Build dispatcher
 
-        let payload = Payload::new("rust-scraper-test")
+        let payload = Payload::new(&self.ntfy_topic)
             .message("Get a house!")
             .title("Nieuwe aanbod")
             .tags([&self.name])
@@ -131,5 +133,6 @@ pub(crate) async fn from_config(scraper_structs: &mut Vec<Scraper>, config: Scra
         driver: create_driver().await.unwrap(),
         listing: vec![],
         house_link_css: config.house_link_css,
+        ntfy_topic: config.ntfy_topic,
     })
 }
