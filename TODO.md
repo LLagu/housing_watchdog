@@ -6,22 +6,23 @@ View the raw content of this file to understand the format.
 
 ### Todo
 - [ ] Stress test
+- [ ] Write README
 - [ ] Add relevant comments
 - [ ] Add enum to cover for different find_all(By::)
-- [ ] Save and load previous UI session values
 - [ ] Code clean up and refactoring
   - [ ] Names
   - [ ] Modules
-- [ ] Manage scraped_results fail
 - [ ] Allow non-sudoers to run the program
-### In Progress
-
 - [ ] Add GUI or terminal control (config filepath + <s>ntfy topic</s>)
-  - [ ] Move `App` definition and impl to separate module
   - [ ] Rework UI colors and names
   - [ ] Make sparkline span its block width
   - [ ] Move logo to another module
-- [ ] Add css exclusion parameter to config
+  - [ ] Add css exclusion parameter to config
+  
+### In Progress
+
+- [ ] Save and load previous UI session values
+- [ ] Manage scraped_results fail
 
 ### Done ✓
 
@@ -35,6 +36,7 @@ View the raw content of this file to understand the format.
 - [X] Fix chromedriver port and add autostart
 - [X] Add config file to define the scrapers' parameters
 - [X] UI work 
+  - [X] Move `App` definition and impl to separate module
   - [X] Define basic structure
   - [X] Parametrize main logic function to accept the config path
   - [X] Link buttons to main logic
