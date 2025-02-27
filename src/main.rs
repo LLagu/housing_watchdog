@@ -44,7 +44,7 @@ async fn watchdog_logic(config_path: &str) {
     let results = future::join_all(futures).await;
 }
 
-// Debug logic without UI
+// // Debug logic without UI
 // #[tokio::main]
 // async fn main() {
 //     watchdog_logic("/path/to/config.toml").await;

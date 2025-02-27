@@ -2,9 +2,10 @@ use crate::driver::*;
 use ntfy::{dispatcher, Error, Payload, Priority, Url};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
-use std::fmt;
 use std::fs::{read_to_string, File};
-use std::io::Write;
+use std::io::{ErrorKind, Write};
+use std::path::Path;
+use std::{env, fmt, fs};
 use thirtyfour::error::WebDriverResult;
 use thirtyfour::{By, WebDriver};
 
@@ -64,7 +65,7 @@ impl Scraper {
         if !difference.is_empty() {
             for item in difference {
                 self.listing.push(item.to_string());
-                self.notify(item).await;
+                // self.notify(item).await;
             }
             let file_path =
                 "./prev_session/".to_owned() + str::replace(&self.url, "/", "_").as_str() + ".txt";
@@ -95,8 +96,18 @@ impl Scraper {
 
     fn load_previous_session_file(&mut self) -> std::io::Result<()> {
         &self.listing.clear();
-        let file_path =
-            "./prev_session/".to_owned() + str::replace(&self.url, "/", "_").as_str() + ".txt";
+
+        let mut prev_session_path =
+            Path::new(env::current_dir()?.as_path()).join("./prev_session/");
+        match fs::create_dir_all(&prev_session_path) {
+            Ok(_) => {}
+            Err(e) => match e.kind() {
+                _ => println!("{:?}", e),
+            },
+        };
+        let prev_session_path = prev_session_path.to_str().unwrap();
+        let file_name = str::replace(&self.url, "/", "_") + ".txt";
+        let file_path = format!("{prev_session_path}{file_name}");
 
         match read_to_string(file_path.to_string()) {
             Ok(contents) => {
@@ -108,7 +119,6 @@ impl Scraper {
                 std::io::ErrorKind::NotFound => {
                     File::create(file_path.to_string())?;
                 }
-                std::io::ErrorKind::PermissionDenied => {}
                 _ => println!("{:?}", e),
             },
         }
@@ -116,8 +126,8 @@ impl Scraper {
     }
 
     pub(crate) async fn run(&mut self) {
-        // self.load_previous_session_file()
-        //     .expect("Unexpected error in reading the file");
+        self.load_previous_session_file()
+            .expect("Unexpected error in reading the file");
         loop {
             //TODO: manage scraped_results fail
             let scraped_results = self.scrape().await.expect("TODO: panic message");
