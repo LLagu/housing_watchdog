@@ -1,5 +1,4 @@
 use std::{env, fs};
-use std::fs::{read_to_string, File};
 use std::path::Path;
 
 pub(crate) enum PrevSessionFileType{

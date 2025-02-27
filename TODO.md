@@ -21,7 +21,6 @@ View the raw content of this file to understand the format.
   
 ### In Progress
 
-- [ ] Save and load previous UI session values
 - [ ] Manage scraped_results fail
 
 ### Done ✓
@@ -45,3 +44,4 @@ View the raw content of this file to understand the format.
 - [X] Move ratatui logic to another module
 - [X] Fix pathing problems 
 - [X] Create util fn for prev_session path retrieval
+- [X] Save and load previous UI session values

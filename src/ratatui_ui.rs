@@ -6,7 +6,8 @@ use rand::{
 use crate::watchdog_logic;
 use futures::FutureExt;
 use std::{collections::VecDeque, time::Instant};
-use std::fs::{read_to_string, File};
+use std::fs::{read_to_string, File, OpenOptions};
+use std::io::Write;
 use tokio::sync::oneshot;
 use tui_input::Input;
 use crate::session::{get_prev_session_file_path, PrevSessionFileType};
@@ -64,6 +65,7 @@ impl App {
 
         // Clone what we need for the async task
         let file_path = self.file_path_input.value().to_string();
+        save_prev_config_path(&file_path);
 
         // Spawn the task
         tokio::spawn(async move {
@@ -120,8 +122,10 @@ impl App {
     }
 }
 
-fn save_prev_config_path() {
-
+fn save_prev_config_path(content: &String) {
+    let prev_config_path = get_prev_session_file_path(PrevSessionFileType::ConfigPath);
+    let mut file = OpenOptions::new().write(true).truncate(true).open(prev_config_path).unwrap();
+    file.write_all(content.as_bytes()).unwrap()
 }
 
 fn load_prev_config_path() -> String {
