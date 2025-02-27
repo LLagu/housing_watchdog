@@ -8,13 +8,18 @@ View the raw content of this file to understand the format.
 - [ ] Stress test
 - [ ] Add relevant comments
 - [ ] Add enum to cover for different find_all(By::)
-- [ ] Add GUI or terminal control (config filepath + ntfy topic)
-
+- [ ] Save and load previous ui session values
 
 ### In Progress
 - [ ] Code clean up and refactoring
-  - Names
-  - Modules ✓
+  - [ ] Names
+  - [ ] Modules
+- [ ] Add GUI or terminal control (config filepath + ntfy topic)
+  - [ ] Move `App` definition and impl to separate module
+  - [ ] Add ntfy topic field to configuration
+  - [ ] Rework UI colors and names
+  - [ ] Make sparkline span its block width
+  - [ ] Move ratatui logic in another module
 
 ### Done ✓
 
@@ -27,3 +32,7 @@ View the raw content of this file to understand the format.
 - [X] Create main loop
 - [X] Fix chromedriver port and add autostart
 - [X] Add config file to define the scrapers' parameters
+- [X] UI work 
+  - [X] Define basic structure
+  - [X] Parametrize main logic function to accept the config path
+  - [X] Link buttons to main logic
