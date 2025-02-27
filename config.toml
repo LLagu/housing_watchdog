@@ -1,3 +1,5 @@
+chromedriver_path = "/home//path/to/chromedriver"
+
 [[scraper]]
 name = "Pararius"
 url = "https://www.pararius.nl/huurwoningen/utrecht/"

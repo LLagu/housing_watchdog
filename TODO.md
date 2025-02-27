@@ -19,9 +19,9 @@ View the raw content of this file to understand the format.
   - [ ] Move `App` definition and impl to separate module
   - [ ] Rework UI colors and names
   - [ ] Make sparkline span its block width
-  - [ ] Move ratatui logic in another module
   - [ ] Move logo to another module
 - [ ] Add css exclusion parameter to config
+- [ ] Fix pathing problems 
 
 ### Done ✓
 
@@ -40,3 +40,4 @@ View the raw content of this file to understand the format.
   - [X] Link buttons to main logic
 - [X] Add ntfy topic field to configuration and remove its UI element
 - [X] Preventing logic stdout to print in the UI
+- [X] Move ratatui logic to another module
