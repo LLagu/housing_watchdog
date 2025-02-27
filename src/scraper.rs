@@ -8,6 +8,7 @@ use std::path::Path;
 use std::{env, fmt, fs};
 use thirtyfour::error::WebDriverResult;
 use thirtyfour::{By, WebDriver};
+use crate::session::{get_prev_session_file_path, PrevSessionFileType};
 
 #[derive(Clone)]
 pub(crate) struct Scraper {
@@ -96,19 +97,7 @@ impl Scraper {
 
     fn load_previous_session_file(&mut self) -> std::io::Result<()> {
         &self.listing.clear();
-
-        let mut prev_session_path =
-            Path::new(env::current_dir()?.as_path()).join("./prev_session/");
-        match fs::create_dir_all(&prev_session_path) {
-            Ok(_) => {}
-            Err(e) => match e.kind() {
-                _ => println!("{:?}", e),
-            },
-        };
-        let prev_session_path = prev_session_path.to_str().unwrap();
-        let file_name = str::replace(&self.url, "/", "_") + ".txt";
-        let file_path = format!("{prev_session_path}{file_name}");
-
+        let file_path = get_prev_session_file_path(PrevSessionFileType::ScrapedContent(self.url.clone()));
         match read_to_string(file_path.to_string()) {
             Ok(contents) => {
                 for link in contents.split_whitespace() {

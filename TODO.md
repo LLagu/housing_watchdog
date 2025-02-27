@@ -44,3 +44,4 @@ View the raw content of this file to understand the format.
 - [X] Preventing logic stdout to print in the UI
 - [X] Move ratatui logic to another module
 - [X] Fix pathing problems 
+- [X] Create util fn for prev_session path retrieval
