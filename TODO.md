@@ -12,7 +12,7 @@ View the raw content of this file to understand the format.
 - [ ] Code clean up and refactoring
   - [ ] Names
   - [ ] Modules
-  
+- [ ] Manage scraped_results fail
 ### In Progress
 
 - [ ] Add GUI or terminal control (config filepath + <s>ntfy topic</s>)
@@ -21,7 +21,6 @@ View the raw content of this file to understand the format.
   - [ ] Make sparkline span its block width
   - [ ] Move ratatui logic in another module
   - [ ] Move logo to another module
-- [ ] Prevent logic stdout to print in the UI
 - [ ] Add css exclusion parameter to config
 
 ### Done ✓
@@ -40,3 +39,4 @@ View the raw content of this file to understand the format.
   - [X] Parametrize main logic function to accept the config path
   - [X] Link buttons to main logic
 - [X] Add ntfy topic field to configuration and remove its UI element
+- [X] Preventing logic stdout to print in the UI

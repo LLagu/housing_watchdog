@@ -57,9 +57,7 @@ impl Scraper {
             .filter(|item| !item_set.contains(item))
             .collect();
 
-        if difference.is_empty() {
-            println!("No new items to be scraped");
-        } else {
+        if !difference.is_empty() {
             for item in difference {
                 self.listing.push(item.to_string());
                 self.notify(item).await;

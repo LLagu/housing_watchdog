@@ -1,5 +1,5 @@
 use std::env;
-use std::process::Command;
+use std::process::{Command, Stdio};
 use std::time::Duration;
 use thirtyfour::error::WebDriverResult;
 use thirtyfour::{DesiredCapabilities, WebDriver};
@@ -9,6 +9,9 @@ pub(crate) async fn start_chromedriver() {
     let chromedriver_path = (cwd.to_string_lossy() + "/chromedriver/chromedriver").to_string();
     Command::new(chromedriver_path)
         .arg("--port=9999")
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
         .spawn()
         .expect("Failed to start chromedriver");
     tokio::time::sleep(Duration::from_secs(1)).await;
