@@ -32,12 +32,12 @@ async fn watchdog_logic(config_path: &str) {
 
     let chromedriver_config: driver::ChromedriverConfig =
         toml::from_str(config_path_fmt.as_str()).unwrap();
-    driver::start_chromedriver(chromedriver_config.chromedriver_path).await;
+    let free_local_port = driver::start_chromedriver(chromedriver_config.chromedriver_path).await;
 
     let configs: scraper::ScraperConfigVec = toml::from_str(config_path_fmt.as_str()).unwrap();
     let mut scraper_structs = vec![];
     for config in configs.scraper {
-        scraper::from_config(&mut scraper_structs, config).await;
+        scraper::from_config(&mut scraper_structs, config, free_local_port.clone()).await;
     }
 
     let futures: Vec<_> = scraper_structs
@@ -47,10 +47,10 @@ async fn watchdog_logic(config_path: &str) {
     let results = future::join_all(futures).await;
 }
 
-// Debug logic without UI
+// // Debug logic without UI
 // #[tokio::main]
 // async fn main() {
-//     watchdog_logic("/home/robolor/RustroverProjects/housing_watchdog_github/config.toml").await;
+//     watchdog_logic("/home/config.toml").await;
 // }
 
 #[tokio::main]

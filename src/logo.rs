@@ -1,4 +1,4 @@
-pub(crate) static LOGO: &str = r"  / \            _/ \      - Welcome to housing_scraper, get notifications about newly posted house offers
+pub(crate) static LOGO: &str = r"  / \            _/ \      - Welcome to housing_watchdog, get notifications about newly posted house offers
  /   \        __/@   )     - Visit https://github.com/LLagu/housing_watchdog to learn how to use
 /_____\      O       \     - Press Tab to navigate.
 |[]_[]|       \____)  \    - Press Enter to confirm.

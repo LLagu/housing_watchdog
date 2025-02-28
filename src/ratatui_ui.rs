@@ -3,14 +3,14 @@ use rand::{
     rngs::ThreadRng,
 };
 
+use crate::session::{get_prev_session_file_path, PrevSessionFileType};
 use crate::watchdog_logic;
 use futures::FutureExt;
-use std::{collections::VecDeque, time::Instant};
 use std::fs::{read_to_string, File, OpenOptions};
 use std::io::Write;
+use std::{collections::VecDeque, time::Instant};
 use tokio::sync::oneshot;
 use tui_input::Input;
-use crate::session::{get_prev_session_file_path, PrevSessionFileType};
 
 pub(crate) enum InputMode {
     FilePathInput,
@@ -34,7 +34,6 @@ impl App {
         let mut initial_data = VecDeque::with_capacity(100);
         let mut rng = rand::thread_rng();
 
-
         for _ in 0..200 {
             initial_data.push_back(0);
         }
@@ -49,8 +48,6 @@ impl App {
             cancel_sender: None,
         }
     }
-
-
 
     pub(crate) fn run_watchdogs(&mut self) {
         // Create a channel for cancellation
@@ -92,6 +89,7 @@ impl App {
             let _ = cancel_tx.send(()); // Ignore errors if receiver is already dropped
         }
 
+        self.output = format!("Scraping stopped.");
         self.loading = false;
     }
     pub(crate) fn next_input(&mut self) {
@@ -117,21 +115,27 @@ impl App {
 
 fn save_prev_config_path(content: &String) {
     let prev_config_path = get_prev_session_file_path(PrevSessionFileType::ConfigPath);
-    let mut file = OpenOptions::new().write(true).truncate(true).open(prev_config_path).unwrap();
+    let mut file = OpenOptions::new()
+        .write(true)
+        .truncate(true)
+        .open(prev_config_path)
+        .unwrap();
     file.write_all(content.as_bytes()).unwrap()
 }
 
 fn load_prev_config_path() -> String {
     let prev_config_path = get_prev_session_file_path(PrevSessionFileType::ConfigPath);
     match read_to_string(&prev_config_path) {
-        Ok(contents) => {contents}
+        Ok(contents) => contents,
         Err(e) => match e.kind() {
             std::io::ErrorKind::NotFound => {
                 File::create(prev_config_path);
                 String::from("")
             }
-            _ => {println!("{:?}", e);
-                String::from("")},
+            _ => {
+                println!("{:?}", e);
+                String::from("")
+            }
         },
     }
 }

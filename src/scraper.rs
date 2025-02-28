@@ -134,12 +134,16 @@ impl Scraper {
     }
 }
 
-pub(crate) async fn from_config(scraper_structs: &mut Vec<Scraper>, config: ScraperConfig) {
+pub(crate) async fn from_config(
+    scraper_structs: &mut Vec<Scraper>,
+    config: ScraperConfig,
+    port: String,
+) {
     scraper_structs.push(Scraper {
         name: config.name,
         url: config.url,
         base_url_to_prepend: config.base_url_to_prepend,
-        driver: create_driver().await.unwrap(),
+        driver: create_driver(port).await.unwrap(),
         listing: vec![],
         house_link_css: config.house_link_css,
         ntfy_topic: config.ntfy_topic,
