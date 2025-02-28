@@ -1,13 +1,13 @@
 use crate::driver::*;
+use crate::session::{get_prev_session_file_path, PrevSessionFileType};
 use ntfy::{dispatcher, Error, Payload, Priority, Url};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
+use std::fmt;
 use std::fs::{read_to_string, File};
-use std::io::{Write};
-use std::{fmt};
+use std::io::Write;
 use thirtyfour::error::WebDriverResult;
 use thirtyfour::{By, WebDriver};
-use crate::session::{get_prev_session_file_path, PrevSessionFileType};
 
 #[derive(Clone)]
 pub(crate) struct Scraper {
@@ -65,7 +65,7 @@ impl Scraper {
         if !difference.is_empty() {
             for item in difference {
                 self.listing.push(item.to_string());
-                // self.notify(item).await;
+                self.notify(item).await;
             }
             let file_path =
                 "./prev_session/".to_owned() + str::replace(&self.url, "/", "_").as_str() + ".txt";
@@ -96,7 +96,8 @@ impl Scraper {
 
     fn load_previous_session_file(&mut self) -> std::io::Result<()> {
         &self.listing.clear();
-        let file_path = get_prev_session_file_path(PrevSessionFileType::ScrapedContent(self.url.clone()));
+        let file_path =
+            get_prev_session_file_path(PrevSessionFileType::ScrapedContent(self.url.clone()));
         match read_to_string(file_path.to_string()) {
             Ok(contents) => {
                 for link in contents.split_whitespace() {
@@ -117,10 +118,18 @@ impl Scraper {
         self.load_previous_session_file()
             .expect("Unexpected error in reading the file");
         loop {
-            //TODO: manage scraped_results fail
-            let scraped_results = self.scrape().await.expect("TODO: panic message");
-            self.detect(scraped_results).await;
-            tokio::time::sleep(tokio::time::Duration::from_secs(120)).await;
+            match self.scrape().await {
+                Ok(scraped_results) => {
+                    self.detect(scraped_results).await;
+                    tokio::time::sleep(tokio::time::Duration::from_secs(120)).await;
+                }
+                Err(_) => {
+                    // Wait anyway and skip to next iteration. This handle loss of internet
+                    // connection or slow website loading.
+                    tokio::time::sleep(tokio::time::Duration::from_secs(120)).await;
+                    continue;
+                }
+            }
         }
     }
 }
