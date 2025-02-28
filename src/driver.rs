@@ -13,7 +13,7 @@ pub(crate) async fn start_chromedriver(chromedriver_path: String) {
     let chromedriver_path = chromedriver_path;
     tokio::time::sleep(Duration::from_secs(2)).await;
     Command::new(chromedriver_path)
-        .arg("--port=9999")
+        .arg("--port=9998")
         .stdin(Stdio::null())
         .stdout(Stdio::null())
         .stderr(Stdio::null())
@@ -23,5 +23,5 @@ pub(crate) async fn start_chromedriver(chromedriver_path: String) {
 }
 pub(crate) async fn create_driver() -> WebDriverResult<WebDriver> {
     let caps = DesiredCapabilities::chrome();
-    WebDriver::new("http://localhost:9999", caps).await
+    WebDriver::new("http://localhost:9998", caps).await
 }

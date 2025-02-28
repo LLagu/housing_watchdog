@@ -18,8 +18,6 @@ View the raw content of this file to understand the format.
 ### In Progress
 
 - [ ] Rework UI colors and names
-- [ ] Make sparkline span its block width
-- [ ] Move logo to another module
 
 ### Done ✓
 
@@ -45,3 +43,5 @@ View the raw content of this file to understand the format.
 - [X] Create util fn for prev_session path retrieval
 - [X] Save and load previous UI session values
 - [X] Manage scraped_results fail
+- [X] Make sparkline span its block width
+- [X] Move logo to another module

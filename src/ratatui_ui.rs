@@ -37,7 +37,7 @@ impl App {
         let mut rng = rand::thread_rng();
 
 
-        for _ in 0..100 {
+        for _ in 0..200 {
             initial_data.push_back(0);
         }
 
@@ -116,8 +116,8 @@ impl App {
             let value = between.sample(&mut self.rng);
 
             // Update sparkline data
-            self.sparkline_data.pop_front();
-            self.sparkline_data.push_back(value);
+            self.sparkline_data.pop_back();
+            self.sparkline_data.push_front(value);
         }
     }
 }
@@ -142,4 +142,3 @@ fn load_prev_config_path() -> String {
         },
     }
 }
-

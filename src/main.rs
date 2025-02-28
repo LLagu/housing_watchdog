@@ -2,6 +2,7 @@ mod driver;
 mod ratatui_ui;
 mod scraper;
 mod session;
+mod logo;
 
 use crate::ratatui_ui::InputMode;
 use crossterm::{
@@ -45,10 +46,10 @@ async fn watchdog_logic(config_path: &str) {
     let results = future::join_all(futures).await;
 }
 
-// // Debug logic without UI
+// Debug logic without UI
 // #[tokio::main]
 // async fn main() {
-//     watchdog_logic("/path/to/config.toml").await;
+//     watchdog_logic("/home/robolor/RustroverProjects/housing_watchdog_github/config.toml").await;
 // }
 
 #[tokio::main]
@@ -63,12 +64,6 @@ async fn main() {
     // Create app state
     let mut app = ratatui_ui::App::new();
 
-    let logo = r"   __ __             _            _      __     __      __     __
-  / // ___ __ _____ (____ ___ _  | | /| / ___ _/ /_____/ / ___/ ___ ___ _
- / _  / _ / // (_-</ / _ / _ `/  | |/ |/ / _ `/ __/ __/ _ / _  / _ / _ `/
-/_//_/\___\_,_/___/_/_//_\_, /   |__/|__/\_,_/\__/\__/_//_\_,_/\___\_, /
-                        /___/                                     /___/  ";
-
     // Main loop
     loop {
         // Update sparkline if loading
@@ -80,13 +75,13 @@ async fn main() {
             .draw(|f| {
                 let chunks = Layout::default()
                     .direction(Direction::Vertical)
-                    .margin(2)
+                    .margin(0)
                     .constraints(
                         [
-                            Constraint::Length(8), // ASCII logo - increased height
+                            Constraint::Length(7), // ASCII logo
                             Constraint::Length(3), // File path input
                             Constraint::Length(3), // Buttons
-                            Constraint::Length(6), // Sparkline - increased height
+                            Constraint::Length(6), // Sparkline
                             Constraint::Min(1),    // Output
                         ]
                         .as_ref(),
@@ -94,7 +89,7 @@ async fn main() {
                     .split(f.size());
 
                 // ASCII logo
-                let logo_widget = Paragraph::new(logo)
+                let logo_widget = Paragraph::new(logo::LOGO)
                     .style(Style::default().fg(Color::Cyan))
                     .block(Block::default().borders(Borders::ALL).title(""));
                 f.render_widget(logo_widget, chunks[0]);
