@@ -1,6 +1,7 @@
 mod driver;
 mod ratatui_ui;
 mod scraper;
+mod session;
 
 use crate::ratatui_ui::InputMode;
 use crossterm::{
@@ -119,22 +120,22 @@ async fn main() {
                     .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
                     .split(chunks[2]);
 
-                // Submit button
-                let submit_style = match app.input_mode {
+                // Run button
+                let run_button_style = match app.input_mode {
                     InputMode::RunButton => Style::default()
                         .fg(Color::Yellow)
                         .add_modifier(Modifier::BOLD),
                     _ => Style::default(),
                 };
 
-                let submit_button = Paragraph::new("[ Run ]")
-                    .style(submit_style)
+                let run_button = Paragraph::new("[ Run ]")
+                    .style(run_button_style)
                     .alignment(ratatui::layout::Alignment::Center)
                     .block(Block::default().borders(Borders::ALL));
-                f.render_widget(submit_button, button_chunks[0]);
+                f.render_widget(run_button, button_chunks[0]);
 
                 // Stop button
-                let stop_style = match app.input_mode {
+                let stop_button_style = match app.input_mode {
                     InputMode::StopButton => Style::default()
                         .fg(Color::Yellow)
                         .add_modifier(Modifier::BOLD),
@@ -142,7 +143,7 @@ async fn main() {
                 };
 
                 let stop_button = Paragraph::new("[ Stop ]")
-                    .style(stop_style)
+                    .style(stop_button_style)
                     .alignment(ratatui::layout::Alignment::Center)
                     .block(Block::default().borders(Borders::ALL));
                 f.render_widget(stop_button, button_chunks[1]);

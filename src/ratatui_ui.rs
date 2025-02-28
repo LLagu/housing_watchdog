@@ -5,9 +5,12 @@ use rand::{
 
 use crate::watchdog_logic;
 use futures::FutureExt;
-use std::{collections::VecDeque, error::Error, io, time::Instant};
+use std::{collections::VecDeque, time::Instant};
+use std::fs::{read_to_string, File, OpenOptions};
+use std::io::Write;
 use tokio::sync::oneshot;
 use tui_input::Input;
+use crate::session::{get_prev_session_file_path, PrevSessionFileType};
 
 pub(crate) enum InputMode {
     FilePathInput,
@@ -32,15 +35,14 @@ impl App {
         // Initialize with some random data to fill the sparkline
         let mut initial_data = VecDeque::with_capacity(100);
         let mut rng = rand::thread_rng();
-        // let between = Uniform::from(0..100);
+
 
         for _ in 0..100 {
-            // initial_data.push_back(between.sample(&mut rng));
             initial_data.push_back(0);
         }
 
         App {
-            file_path_input: Input::default(),
+            file_path_input: Input::from(load_prev_config_path()),
             input_mode: InputMode::FilePathInput,
             output: String::new(),
             show_output: false,
@@ -52,6 +54,8 @@ impl App {
         }
     }
 
+
+
     pub(crate) fn run_watchdogs(&mut self) {
         // Create a channel for cancellation
         let (cancel_tx, cancel_rx) = oneshot::channel();
@@ -61,6 +65,7 @@ impl App {
 
         // Clone what we need for the async task
         let file_path = self.file_path_input.value().to_string();
+        save_prev_config_path(&file_path);
 
         // Spawn the task
         tokio::spawn(async move {
@@ -116,3 +121,25 @@ impl App {
         }
     }
 }
+
+fn save_prev_config_path(content: &String) {
+    let prev_config_path = get_prev_session_file_path(PrevSessionFileType::ConfigPath);
+    let mut file = OpenOptions::new().write(true).truncate(true).open(prev_config_path).unwrap();
+    file.write_all(content.as_bytes()).unwrap()
+}
+
+fn load_prev_config_path() -> String {
+    let prev_config_path = get_prev_session_file_path(PrevSessionFileType::ConfigPath);
+    match read_to_string(&prev_config_path) {
+        Ok(contents) => {contents}
+        Err(e) => match e.kind() {
+            std::io::ErrorKind::NotFound => {
+                File::create(prev_config_path);
+                String::from("")
+            }
+            _ => {println!("{:?}", e);
+            String::from("")},
+        },
+    }
+}
+

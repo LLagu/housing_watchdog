@@ -1,4 +1,4 @@
-# Housing watchdog
+ # Housing watchdog
 
 This is an example of TODO.md
 
@@ -13,16 +13,13 @@ View the raw content of this file to understand the format.
   - [ ] Names
   - [ ] Modules
 - [ ] Allow non-sudoers to run the program
-- [ ] Add GUI or terminal control (config filepath + <s>ntfy topic</s>)
-  - [ ] Rework UI colors and names
-  - [ ] Make sparkline span its block width
-  - [ ] Move logo to another module
-  - [ ] Add css exclusion parameter to config
+- [ ] Add css exclusion parameter to config
   
 ### In Progress
 
-- [ ] Save and load previous UI session values
-- [ ] Manage scraped_results fail
+- [ ] Rework UI colors and names
+- [ ] Make sparkline span its block width
+- [ ] Move logo to another module
 
 ### Done ✓
 
@@ -35,6 +32,7 @@ View the raw content of this file to understand the format.
 - [X] Create main loop
 - [X] Fix chromedriver port and add autostart
 - [X] Add config file to define the scrapers' parameters
+- [X] Add GUI or terminal control (config filepath + <s>ntfy topic</s>)
 - [X] UI work 
   - [X] Move `App` definition and impl to separate module
   - [X] Define basic structure
@@ -44,3 +42,6 @@ View the raw content of this file to understand the format.
 - [X] Preventing logic stdout to print in the UI
 - [X] Move ratatui logic to another module
 - [X] Fix pathing problems 
+- [X] Create util fn for prev_session path retrieval
+- [X] Save and load previous UI session values
+- [X] Manage scraped_results fail
