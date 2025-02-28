@@ -1,4 +1,5 @@
 mod driver;
+mod logo;
 mod ratatui_ui;
 mod scraper;
 mod session;
@@ -17,7 +18,7 @@ use ratatui::{
     widgets::{Block, Borders, Paragraph, Sparkline},
     Terminal,
 };
-use std::{fs};
+use std::fs;
 use std::future::IntoFuture;
 use std::io::prelude::*;
 use std::path::Path;
@@ -29,7 +30,8 @@ use tui_input::backend::crossterm::EventHandler;
 async fn watchdog_logic(config_path: &str) {
     let config_path_fmt = fs::read_to_string(Path::new(&config_path)).unwrap();
 
-    let chromedriver_config: driver::ChromedriverConfig = toml::from_str(config_path_fmt.as_str()).unwrap();
+    let chromedriver_config: driver::ChromedriverConfig =
+        toml::from_str(config_path_fmt.as_str()).unwrap();
     driver::start_chromedriver(chromedriver_config.chromedriver_path).await;
 
     let configs: scraper::ScraperConfigVec = toml::from_str(config_path_fmt.as_str()).unwrap();
@@ -45,10 +47,10 @@ async fn watchdog_logic(config_path: &str) {
     let results = future::join_all(futures).await;
 }
 
-// // Debug logic without UI
+// Debug logic without UI
 // #[tokio::main]
 // async fn main() {
-//     watchdog_logic("/path/to/config.toml").await;
+//     watchdog_logic("/home/robolor/RustroverProjects/housing_watchdog_github/config.toml").await;
 // }
 
 #[tokio::main]
@@ -63,12 +65,6 @@ async fn main() {
     // Create app state
     let mut app = ratatui_ui::App::new();
 
-    let logo = r"   __ __             _            _      __     __      __     __
-  / // ___ __ _____ (____ ___ _  | | /| / ___ _/ /_____/ / ___/ ___ ___ _
- / _  / _ / // (_-</ / _ / _ `/  | |/ |/ / _ `/ __/ __/ _ / _  / _ / _ `/
-/_//_/\___\_,_/___/_/_//_\_, /   |__/|__/\_,_/\__/\__/_//_\_,_/\___\_, /
-                        /___/                                     /___/  ";
-
     // Main loop
     loop {
         // Update sparkline if loading
@@ -80,29 +76,29 @@ async fn main() {
             .draw(|f| {
                 let chunks = Layout::default()
                     .direction(Direction::Vertical)
-                    .margin(2)
+                    .margin(0)
                     .constraints(
                         [
-                            Constraint::Length(8), // ASCII logo - increased height
+                            Constraint::Length(7), // ASCII logo
                             Constraint::Length(3), // File path input
                             Constraint::Length(3), // Buttons
-                            Constraint::Length(6), // Sparkline - increased height
-                            Constraint::Min(1),    // Output
+                            Constraint::Length(3), // Sparkline
+                            Constraint::Min(3),    // Output
                         ]
                         .as_ref(),
                     )
                     .split(f.size());
 
                 // ASCII logo
-                let logo_widget = Paragraph::new(logo)
-                    .style(Style::default().fg(Color::Cyan))
+                let logo_widget = Paragraph::new(logo::LOGO)
+                    .style(Style::default().fg(Color::White).bg(Color::Black))
                     .block(Block::default().borders(Borders::ALL).title(""));
                 f.render_widget(logo_widget, chunks[0]);
 
                 // File path input
                 let file_path_style = match app.input_mode {
-                    InputMode::FilePathInput => Style::default().fg(Color::Yellow),
-                    _ => Style::default(),
+                    InputMode::FilePathInput => Style::default().fg(Color::Yellow).bg(Color::Black),
+                    _ => Style::default().fg(Color::White).bg(Color::Black),
                 };
 
                 let file_path_input = Paragraph::new(app.file_path_input.value())
@@ -124,8 +120,9 @@ async fn main() {
                 let run_button_style = match app.input_mode {
                     InputMode::RunButton => Style::default()
                         .fg(Color::Yellow)
+                        .bg(Color::Black)
                         .add_modifier(Modifier::BOLD),
-                    _ => Style::default(),
+                    _ => Style::default().fg(Color::White).bg(Color::Black),
                 };
 
                 let run_button = Paragraph::new("[ Run ]")
@@ -138,8 +135,9 @@ async fn main() {
                 let stop_button_style = match app.input_mode {
                     InputMode::StopButton => Style::default()
                         .fg(Color::Yellow)
+                        .bg(Color::Black)
                         .add_modifier(Modifier::BOLD),
-                    _ => Style::default(),
+                    _ => Style::default().fg(Color::White).bg(Color::Black),
                 };
 
                 let stop_button = Paragraph::new("[ Stop ]")
@@ -153,27 +151,27 @@ async fn main() {
                 let sparkline = Sparkline::default()
                     .block(
                         Block::default()
+                            .style(Style::default().fg(Color::White).bg(Color::Black))
                             .borders(Borders::ALL)
-                            .title(if app.loading {
-                                "Scraping (Processing...)"
-                            } else {
-                                "Scraping (Stopped)"
-                            }),
+                            .title(if app.loading { " Scraping " } else { " Idle " }),
                     )
                     .data(&sparkline_data)
-                    .style(Style::default().fg(if app.loading {
-                        Color::Green
-                    } else {
-                        Color::Gray
-                    }));
+                    .style(
+                        Style::default()
+                            .fg(if app.loading {
+                                Color::Green
+                            } else {
+                                Color::Gray
+                            })
+                            .bg(Color::Black),
+                    );
                 f.render_widget(sparkline, chunks[3]);
 
                 // Output
-                if app.show_output {
-                    let output = Paragraph::new(app.output.clone())
-                        .block(Block::default().borders(Borders::ALL).title("Result"));
-                    f.render_widget(output, chunks[4]);
-                }
+                let output = Paragraph::new(app.output.clone())
+                    .block(Block::default().borders(Borders::ALL).title(" Output "))
+                    .style(Style::default().fg(Color::White).bg(Color::Black));
+                f.render_widget(output, chunks[4]);
             })
             .unwrap();
 

@@ -22,11 +22,9 @@ pub(crate) struct App {
     pub(crate) file_path_input: Input,
     pub(crate) input_mode: InputMode,
     pub(crate) output: String,
-    pub(crate) show_output: bool,
     pub(crate) loading: bool,
     pub(crate) sparkline_data: VecDeque<u64>,
     rng: ThreadRng,
-    loading_start_time: Option<Instant>,
     cancel_sender: Option<oneshot::Sender<()>>,
 }
 
@@ -37,7 +35,7 @@ impl App {
         let mut rng = rand::thread_rng();
 
 
-        for _ in 0..100 {
+        for _ in 0..200 {
             initial_data.push_back(0);
         }
 
@@ -45,11 +43,9 @@ impl App {
             file_path_input: Input::from(load_prev_config_path()),
             input_mode: InputMode::FilePathInput,
             output: String::new(),
-            show_output: false,
             loading: false,
             sparkline_data: initial_data,
             rng,
-            loading_start_time: None,
             cancel_sender: None,
         }
     }
@@ -86,10 +82,8 @@ impl App {
             }
         });
 
-        self.output = format!("File path: {}", self.file_path_input.value());
-        self.show_output = true;
+        self.output = format!("Scraping websites...");
         self.loading = true;
-        self.loading_start_time = Some(Instant::now());
     }
 
     pub(crate) fn stop_watchdogs(&mut self) {
@@ -99,7 +93,6 @@ impl App {
         }
 
         self.loading = false;
-        self.loading_start_time = None;
     }
     pub(crate) fn next_input(&mut self) {
         self.input_mode = match self.input_mode {
@@ -111,13 +104,13 @@ impl App {
 
     pub(crate) fn update_sparkline(&mut self) {
         if self.loading {
-            // Generate random value between 0 and 100
-            let between = Uniform::from(0..100);
+            // Generate random value from range
+            let between = Uniform::from(20..100);
             let value = between.sample(&mut self.rng);
 
             // Update sparkline data
-            self.sparkline_data.pop_front();
-            self.sparkline_data.push_back(value);
+            self.sparkline_data.pop_back();
+            self.sparkline_data.push_front(value);
         }
     }
 }
@@ -138,8 +131,7 @@ fn load_prev_config_path() -> String {
                 String::from("")
             }
             _ => {println!("{:?}", e);
-            String::from("")},
+                String::from("")},
         },
     }
 }
-
