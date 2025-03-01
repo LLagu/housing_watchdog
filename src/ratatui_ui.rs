@@ -6,9 +6,9 @@ use rand::{
 use crate::session::{get_prev_session_file_path, PrevSessionFileType};
 use crate::watchdog_logic;
 use futures::FutureExt;
+use std::collections::VecDeque;
 use std::fs::{read_to_string, File, OpenOptions};
 use std::io::Write;
-use std::{collections::VecDeque, time::Instant};
 use tokio::sync::oneshot;
 use tui_input::Input;
 
@@ -32,7 +32,7 @@ impl App {
     pub(crate) fn new() -> App {
         // Initialize with some random data to fill the sparkline
         let mut initial_data = VecDeque::with_capacity(100);
-        let mut rng = rand::thread_rng();
+        let rng = rand::thread_rng();
 
         for _ in 0..200 {
             initial_data.push_back(0);
@@ -130,7 +130,7 @@ fn load_prev_config_path() -> String {
         Ok(contents) => contents,
         Err(e) => match e.kind() {
             std::io::ErrorKind::NotFound => {
-                File::create(prev_config_path);
+                File::create(prev_config_path).expect("fs panic: failed creating prev_config_path");
                 String::from("")
             }
             _ => {

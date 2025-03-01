@@ -21,7 +21,7 @@ housing_watchdog is a terminal application to scrape real estate websites and ge
 - Run with `cargo run` 
 
 ### What it does
-The program reads the configuration file, starts a chromdriver process on a free local port, creates one or more scrapers that open separate Chrome windows and look for the specified elements.
+The program reads the configuration file, starts a chromedriver process on a free local port, creates one or more scrapers that open separate Chrome windows and look for the specified elements.
 The first time the program is run all the houses will be "newly posted" so there will be some notification spam.
 After the first run it will remember the previous session and notify 
 

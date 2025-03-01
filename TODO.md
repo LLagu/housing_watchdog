@@ -8,14 +8,11 @@ View the raw content of this file to understand the format.
 - [ ] Stress test
 - [ ] Add relevant comments
 - [ ] Add enum to cover for different find_all(By::)
-- [ ] Add css exclusion parameter to config
+- [ ] Add tests
 
 ### In Progress
 
-- [ ] Code clean up and refactoring
-  - [ ] Names
-  - [ ] Modules
-- [ ] Resolve compilation warnings
+- [ ] Add css exclusion parameter to config
 
 ### Done ✓
 
@@ -46,3 +43,7 @@ View the raw content of this file to understand the format.
 - [X] Rework UI colors and names
 - [X] Dynamically find free port for chromedriver
 - [X] Write README
+- [X] Resolve compilation warnings
+- [X] Code clean up and refactoring
+  - [X] Names
+  - [X] Modules

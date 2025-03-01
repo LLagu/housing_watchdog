@@ -4,13 +4,13 @@ pub(crate) static LOGO: &str = r"  / \            _/ \      - Welcome to housing
 |[]_[]|       \____)  \    - Press Enter to confirm.
 |_|_|_|	      U  \____ \    - Press Esc or q to quit.";
 
-pub(crate) static TITLE_LOGO: &str = r"   __ __             _            _      __     __      __     __
+pub(crate) static _TITLE_LOGO: &str = r"   __ __             _            _      __     __      __     __
   / // ___ __ _____ (____ ___ _  | | /| / ___ _/ /_____/ / ___/ ___ ___ _
  / _  / _ / // (_-</ / _ / _ `/  | |/ |/ / _ `/ __/ __/ _ / _  / _ / _ `/
 /_//_/\___\_,_/___/_/_//_\_, /   |__/|__/\_,_/\__/\__/_//_\_,_/\___\_, /
                         /___/                                     /___/  ";
 
-pub(crate) static DOG_LOGO: &str = r"     @@@@@@@@@@@@@&
+pub(crate) static _DOG_LOGO: &str = r"     @@@@@@@@@@@@@&
                                        @@@@            @@@@@
                                      @@@                   @@@@
                                    @@@        .@    #@        @@@@@@@@

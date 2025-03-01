@@ -1,9 +1,9 @@
-use port_check::{free_local_port, free_local_port_in_range};
+use port_check::free_local_port;
 use serde::Deserialize;
 use std::process::{Command, Stdio};
 use std::time::Duration;
 use thirtyfour::error::WebDriverResult;
-use thirtyfour::{ChromiumLikeCapabilities, DesiredCapabilities, WebDriver};
+use thirtyfour::{DesiredCapabilities, WebDriver};
 
 #[derive(Deserialize)]
 pub(crate) struct ChromedriverConfig {
@@ -24,7 +24,6 @@ pub(crate) async fn start_chromedriver(chromedriver_path: String) -> String {
     free_port
 }
 pub(crate) async fn create_driver(port: String) -> WebDriverResult<WebDriver> {
-    let mut caps = DesiredCapabilities::chrome();
+    let     caps = DesiredCapabilities::chrome();
     WebDriver::new(format!("{}{}", { "http://localhost:" }, { port }), caps).await
 }
-

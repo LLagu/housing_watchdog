@@ -65,7 +65,9 @@ impl Scraper {
         if !difference.is_empty() {
             for item in difference {
                 self.listing.push(item.to_string());
-                self.notify(item).await;
+                self.notify(item)
+                    .await
+                    .expect("notify panic: failed sending notification message");
             }
             let file_path =
                 "./prev_session/".to_owned() + str::replace(&self.url, "/", "_").as_str() + ".txt";
@@ -95,13 +97,13 @@ impl Scraper {
     }
 
     fn load_previous_session_file(&mut self) -> std::io::Result<()> {
-        &self.listing.clear();
+        self.listing.clear();
         let file_path =
             get_prev_session_file_path(PrevSessionFileType::ScrapedContent(self.url.clone()));
         match read_to_string(file_path.to_string()) {
             Ok(contents) => {
                 for link in contents.split_whitespace() {
-                    &self.listing.push(link.to_string());
+                    self.listing.push(link.to_string());
                 }
             }
             Err(e) => match e.kind() {

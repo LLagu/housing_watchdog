@@ -10,8 +10,7 @@ use crossterm::{
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
-use futures::{future, FutureExt};
-use rand::distributions::Distribution;
+use futures::future;
 use ratatui::{
     layout::{Constraint, Direction, Layout},
     style::{Color, Modifier, Style},
@@ -19,11 +18,8 @@ use ratatui::{
     Terminal,
 };
 use std::fs;
-use std::future::IntoFuture;
-use std::io::prelude::*;
+use std::io;
 use std::path::Path;
-use std::{error::Error, io};
-use thirtyfour::prelude::*;
 use tokio;
 use tui_input::backend::crossterm::EventHandler;
 
@@ -44,7 +40,7 @@ async fn watchdog_logic(config_path: &str) {
         .iter_mut()
         .map(|scraper| scraper.run())
         .collect();
-    let results = future::join_all(futures).await;
+    future::join_all(futures).await;
 }
 
 // // Debug logic without UI
@@ -56,9 +52,9 @@ async fn watchdog_logic(config_path: &str) {
 #[tokio::main]
 async fn main() {
     // Setup terminal
-    enable_raw_mode();
+    enable_raw_mode().expect("Ratatui panic: failed enabling terminal's raw mode");
     let mut stdout = io::stdout();
-    execute!(stdout, EnterAlternateScreen); //EnableMouseCapture
+    execute!(stdout, EnterAlternateScreen).expect("crossterm panic: failed executing commands"); //EnableMouseCapture
     let backend = ratatui::backend::CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend).unwrap();
 
@@ -87,7 +83,7 @@ async fn main() {
                         ]
                         .as_ref(),
                     )
-                    .split(f.size());
+                    .split(f.area());
 
                 // ASCII logo
                 let logo_widget = Paragraph::new(logo::LOGO)
@@ -202,11 +198,14 @@ async fn main() {
     }
 
     // Restore terminal
-    disable_raw_mode();
+    disable_raw_mode().expect("Ratatui panic: failed to disable terminal's raw mode");
     execute!(
         terminal.backend_mut(),
         LeaveAlternateScreen,
         DisableMouseCapture
-    );
-    terminal.show_cursor();
+    )
+    .expect("crossterm panic: failed executing commands");
+    terminal
+        .show_cursor()
+        .expect("Ratatui panic: unable to show the cursor");
 }
