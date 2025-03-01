@@ -4,7 +4,6 @@ use std::process::{Command, Stdio};
 use std::time::Duration;
 use thirtyfour::error::WebDriverResult;
 use thirtyfour::{ChromiumLikeCapabilities, DesiredCapabilities, WebDriver};
-use uuid::Timestamp;
 
 #[derive(Deserialize)]
 pub(crate) struct ChromedriverConfig {

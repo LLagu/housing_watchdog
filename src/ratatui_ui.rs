@@ -57,7 +57,8 @@ impl App {
         self.cancel_sender = Some(cancel_tx);
 
         // Clone what we need for the async task
-        let file_path = self.file_path_input.value().to_string();
+        let mut file_path = self.file_path_input.value().to_string();
+        file_path.retain(|c| !c.is_ascii_whitespace());
         save_prev_config_path(&file_path);
 
         // Spawn the task

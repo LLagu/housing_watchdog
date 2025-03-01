@@ -6,19 +6,16 @@ View the raw content of this file to understand the format.
 
 ### Todo
 - [ ] Stress test
-- [ ] Write README
 - [ ] Add relevant comments
 - [ ] Add enum to cover for different find_all(By::)
-- [ ] Allow non-sudoers to run the program
 - [ ] Add css exclusion parameter to config
-- [ ] Resolve compilation warnings
 
 ### In Progress
 
-- [ ] Dynamically find free port for chromedriver
 - [ ] Code clean up and refactoring
   - [ ] Names
   - [ ] Modules
+- [ ] Resolve compilation warnings
 
 ### Done ✓
 
@@ -47,3 +44,5 @@ View the raw content of this file to understand the format.
 - [X] Make sparkline span its block width
 - [X] Move logo to another module
 - [X] Rework UI colors and names
+- [X] Dynamically find free port for chromedriver
+- [X] Write README

@@ -20,11 +20,15 @@ pub(crate) fn get_prev_session_file_path(file_type: PrevSessionFileType) -> Stri
     match file_type {
         PrevSessionFileType::ConfigPath =>{
             let prev_config_file_name = String::from("prev_config.txt");
-            format!("{prev_session_path}{prev_config_file_name}")
+            let mut sanitized_return = format!("{prev_session_path}{prev_config_file_name}");
+            sanitized_return.retain(|c| !c.is_ascii_whitespace());
+            sanitized_return
         },
         PrevSessionFileType::ScrapedContent(url) => {
             let file_name = str::replace(&*url, "/", "_") + ".txt";
-            format!("{prev_session_path}{file_name}")
+            let mut sanitized_return = format!("{prev_session_path}{file_name}");
+            sanitized_return.retain(|c| !c.is_ascii_whitespace());
+            sanitized_return
         }
     }
 }
