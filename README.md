@@ -1,5 +1,7 @@
 # housing_watchdog
-This is housing_watchdog, a terminal application to scrape real estate websites and get notified through ntfy when a new house offer is posted.
+housing_watchdog is a terminal application to scrape real estate websites and get notified through ntfy when a new house offer is posted. 
+
+100% organic Rust, no additives and no artificial flavors. :crab:
 
 ![Alt text](/house_watchdog_screenshot.png?raw=true)
 ![Alt text](/notification_screenshot.jpeg?raw=true)
@@ -17,6 +19,13 @@ This is housing_watchdog, a terminal application to scrape real estate websites 
 - cd into the cloned directory
 - Build with `cargo build` or `cargo build --release`
 - Run with `cargo run` 
+
+### What it does
+The program reads the configuration file, starts a chromdriver process on a free local port, creates one or more scrapers that open separate Chrome windows and look for the specified elements.
+The first time the program is run all the houses will be "newly posted" so there will be some notification spam.
+After the first run it will remember the previous session and notify 
+
+Please not that this is a personal project aimed mainly at learning Rust (and hopefully getting a new house at some point), so there might be some false positives.
 
 ### How to use
 #### Prerequisites
@@ -48,30 +57,29 @@ house_link_css = "div.property-card.link"
 ntfy_topic = "ntfy-topic-2"
 ```
 
-`chromedriver_path`: defines where your chromedriver executable is in your machine. Without it there is no Chrome automation.
+- `chromedriver_path`: defines where your chromedriver executable is in your machine. Without it there is no Chrome automation.
 
-`[[scraper]]`: defines the properties of one scraper. There can be multiple scrapers running at the same time! Just define them separately like in the example.
+- `[[scraper]]`: defines the properties of one scraper. There can be multiple scrapers running at the same time! Just define them separately like in the example.
 
-`name`: identifier used as a tag in the notification message
+- `name`: identifier used as a tag in the notification message
 
-`url`: defines the url to scrape. Ideally your search parameters (houses price range, number of bedrooms etc.) are specified in the url. Website navigation for filtering results is not supported.
+- `url`: defines the url to scrape. Ideally your search parameters (houses price range, number of bedrooms etc.) are specified in the url. Website navigation for filtering results is not supported.
 
-`base_url_to_prepend`: if the 'href' of the html/css element corresponding to a house does not contain the base url, it needs to be specified here.
+- `base_url_to_prepend`: if the 'href' of the html/css element corresponding to a house does not contain the base url, it needs to be specified here.
+  
+  For example, if you are scraping "https://example.com/listings/amsterdam" and the `href` of one house element is `/house_streetname_42`, then you might need to specify 
+  `https://example.com/listings` in `base_url_to_prepend` to get `https://example.com/listings/house_streetname_42` (website dependent). This way once you click on the notification
+  message you are redirected to the specific house link.
 
+  If the element's `href` contains the full url, put `""` in this field.
 
-For example if you are scraping "https://example.com/listings/amsterdam" and the `href` of one house element is `/house_streetname_42`, then you might need to specify 
-`https://example.com/listings` in `base_url_to_prepend` to get `https://example.com/listings/house_streetname_42` (website dependent). This way once you click on the notification
-message you are redirected to the specific house link.
-
-If the element's `href` contains the full url, put `""` in this field.
-
-`house_link_css`: the identifier of the html/css element corresponding to a house. Typically, the websites search results page will have a list of these.
+- `house_link_css`: the identifier of the html/css element corresponding to a house. Typically, the websites search results page will have a list of these.
 the identifier's structure is `<tag>.<class>`. `<tag>` can be any relevant HTML tag (div, li, a, etc.). `<tag>`and `<class>` must be separated by `.`. 
 `<class>` is the class name of the element. If it contains spaces yopu should remove them and replace them with a `.`. 
 
-For example, if the element is `<div class="property-card link" href="https://another-example.com/my-next-house"<div/>` then `house_link_css` will be `div.property-card.link`.
+  For example, if the element is `<div class="property-card link" href="https://another-example.com/my-next-house"<div/>` then `house_link_css` will be `div.property-card.link`.
 
-`ntfy_topic`: the ntfy topic the scraper will send the notification to. See Receiving the notification.
+- `ntfy_topic`: the ntfy topic the scraper will send the notification to. See Receiving the notification.
 
 #### Navigate the interface
 - Press Tab to navigate.
